@@ -1,2 +1,2 @@
 #!/bin/bash
-trivy image devsecops-app:latest > security/trivy-report.txt
+trivy image nitin115/app:latest > security/trivy-report.txt
