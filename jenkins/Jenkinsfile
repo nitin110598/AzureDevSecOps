@@ -1,0 +1,44 @@
+pipeline {
+  agent any
+  stages {
+    stage('Checkout') {
+      steps {
+        git 'https://github.com/nitin110598/Azure_Devsecops.git'
+      }
+    }
+    stage('Code Quality - SonarQube') {
+      steps {
+        sh 'sonar-scanner -Dsonar.projectKey=devsecops -Dsonar.sources=./app'
+      }
+    }
+    stage('Dependency Check') {
+      steps {
+        sh './security/dependency-check.sh'
+      }
+    }
+    stage('Build Docker Image') {
+      steps {
+        sh 'docker build -t devsecops-app:latest ./app'
+      }
+    }
+    stage('Scan Image - Trivy') {
+      steps {
+        sh './security/trivy-scan.sh'
+      }
+    }
+    stage('Push to Registry') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+          sh 'docker login -u $USER -p $PASS'
+          sh 'docker tag devsecops-app:latest $USER/devsecops-app:latest'
+          sh 'docker push $USER/devsecops-app:latest'
+        }
+      }
+    }
+    stage('Deploy to Kubernetes') {
+      steps {
+        sh 'kubectl apply -f k8s/'
+      }
+    }
+  }
+}

@@ -1,0 +1,42 @@
+---
+- name: Install Jenkins
+  hosts: jenkins_server
+  become: true
+  tasks:
+    - name: Ensure Java is installed
+      apt:
+        name: openjdk-17-jdk
+        state: present
+        update_cache: yes
+    - name: Add Jenkins repository key
+      apt_key:
+        url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+        state: present
+    - name: Add Jenkins repository
+      apt_repository:
+        repo: 'deb https://pkg.jenkins.io/debian-stable binary/'
+        state: present
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+    - name: Install Jenkins
+      apt:
+        name: jenkins
+        state: present
+    - name: Start Jenkins
+      service:
+        name: jenkins
+        state: started
+        enabled: true
+    - name: Ensure Jenkins is running
+      wait_for:
+        port: 8080
+        delay: 10
+        timeout: 300
+      register: jenkins_wait
+    - name: Print Jenkins initial admin password
+      command: cat /var/lib/jenkins/secrets/initialAdminPassword
+      register: jenkins_password
+    - name: Display Jenkins initial admin password
+      debug:
+        var: jenkins_password.stdout
