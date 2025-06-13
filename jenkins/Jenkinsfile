@@ -4,6 +4,8 @@ pipeline {
     stage('Checkout') {
       steps {
         git 'https://github.com/nitin110598/Azure_Devsecops.git'
+           branch: 'main',
+            credentialsId: 'nitin110598'
       }
     }
     stage('Code Quality - SonarQube') {
