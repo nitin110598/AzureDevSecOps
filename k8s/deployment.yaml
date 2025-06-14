@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: app
-        image: nitin115/app:letest
+        image: nitin115/app:latest
         ports:
         - containerPort: 3000
       imagePullSecrets:
