@@ -17,3 +17,5 @@ spec:
         image: nitin115/app:letest
         ports:
         - containerPort: 3000
+      imagePullSecrets:
+      - name: dockerhub-secret
