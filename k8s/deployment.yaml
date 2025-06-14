@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: app
-        image: nitin115/app:1
+        image: nitin115/app:letest
         ports:
         - containerPort: 3000
